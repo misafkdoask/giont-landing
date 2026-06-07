@@ -292,7 +292,7 @@ section[id]{scroll-margin-top:96px}
 .stat__big .num{font-variant-numeric:tabular-nums}
 
 /* reveal (scroll-driven; gated by .js so content stays visible without JS) */
-.js .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.js .reveal{opacity:0;transform:translateY(22px) scale(.985);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
 .js .reveal.is-visible{opacity:1;transform:none}
 .js .d1{transition-delay:.05s}.js .d2{transition-delay:.13s}.js .d3{transition-delay:.21s}.js .d4{transition-delay:.29s}
 /* head-level failsafe: if the main script never runs, force everything visible after 2.5s */
@@ -313,12 +313,26 @@ section[id]{scroll-margin-top:96px}
   .js .reveal,.js .reveal.is-visible,.reveal,.lfill{transition:none;animation:none;opacity:1;transform:none}
   .js .lfill,.js .lfill.is-visible,.lfill{width:80%;animation:none}
   .vcard:hover,.plan:hover{transform:none}
+  .plan__badge::after,.hero .eyebrow::before{animation:none}
 }
 /* avoid sticky :hover state lingering after tap on touch devices */
 @media(hover:none){
   .vcard:hover,.plan:hover{transform:none;box-shadow:var(--shadow-sm)}
   .btn--primary:hover{background:var(--color-primary)}
 }
+/* ---- micro-interactions (CSS only, zero added load) ---- */
+/* tap/active feedback (gives life on touch where hover is absent) */
+.btn:active{transform:translateY(1px) scale(.985)}
+.vcard:active,.plan:active,.fcard:active{transform:scale(.99)}
+.chip-pill{transition:transform .14s,box-shadow .14s}
+.chip-pill:active{transform:scale(.95)}
+/* running sheen across the best-plan badge */
+.plan__badge{overflow:hidden}
+.plan__badge::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.5) 50%,transparent 65%);transform:translateX(-130%);animation:sheen 3.4s ease-in-out infinite}
+@keyframes sheen{0%,55%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+/* subtle lightning pulse on the hero eyebrow bolt */
+.hero .eyebrow::before{animation:boltpulse 2.6s ease-in-out infinite}
+@keyframes boltpulse{0%,100%{opacity:.8;transform:scale(1)}50%{opacity:1;transform:scale(1.14)}}
 
 /* ---- body font: Manrope variable (embedded, woff2 base64) ---- */
 @font-face{font-family:"Manrope";font-style:normal;font-weight:400 800;font-display:swap;
