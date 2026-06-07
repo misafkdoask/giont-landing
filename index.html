@@ -625,23 +625,35 @@ section[id]{scroll-margin-top:86px}
     requestAnimationFrame(step);
   }
 
-  /* scroll reveal + progress bar + counters */
+  /* scroll reveal + progress bar + counters
+     scroll-based (not IntersectionObserver): IO is unreliable during iOS Safari
+     momentum scrolling and can leave sections invisible. This fires on every
+     scroll frame + has a failsafe so content is never stuck hidden. */
   var revealEls = document.querySelectorAll('.reveal, .lfill');
-  if('IntersectionObserver' in window){
-    var io = new IntersectionObserver(function(entries, obs){
-      Array.prototype.forEach.call(entries, function(en){
-        if(!en.isIntersecting) return;
-        var el = en.target;
-        el.classList.add('is-visible');
-        Array.prototype.forEach.call(el.querySelectorAll('[data-count]'), runCounter);
-        obs.unobserve(el);
-      });
-    }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
-    Array.prototype.forEach.call(revealEls, function(el){ io.observe(el); });
-  } else {
-    Array.prototype.forEach.call(revealEls, function(el){ el.classList.add('is-visible'); });
-    Array.prototype.forEach.call(document.querySelectorAll('[data-count]'), function(el){ el.textContent = el.getAttribute('data-count'); });
+  function showEl(el){
+    if(el.classList.contains('is-visible')) return;
+    el.classList.add('is-visible');
+    Array.prototype.forEach.call(el.querySelectorAll('[data-count]'), runCounter);
   }
+  function revealInView(){
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    Array.prototype.forEach.call(revealEls, function(el){
+      if(el.classList.contains('is-visible')) return;
+      if(el.getBoundingClientRect().top < vh * 0.92) showEl(el);
+    });
+  }
+  var revealTicking = false;
+  function onRevealScroll(){
+    if(revealTicking) return;
+    revealTicking = true;
+    requestAnimationFrame(function(){ revealInView(); revealTicking = false; });
+  }
+  revealInView();
+  window.addEventListener('scroll', onRevealScroll, { passive: true });
+  window.addEventListener('resize', onRevealScroll, { passive: true });
+  window.addEventListener('load', revealInView);
+  /* failsafe: guarantee nothing stays hidden on any browser */
+  setTimeout(function(){ Array.prototype.forEach.call(revealEls, showEl); }, 2500);
 
   /* subtle hero parallax */
   var heroBg = document.querySelector('.hero__bg');
