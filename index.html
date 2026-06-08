@@ -50,7 +50,7 @@ section[id]{scroll-margin-top:96px}
 
 .display{font-family:var(--font-display);font-weight:800;text-transform:uppercase;letter-spacing:-.01em;line-height:.98}
 .eyebrow{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-primary-pressed)}
-.eyebrow::before{content:"";width:14px;height:14px;flex:none;background:var(--color-accent);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1080 1080'%3E%3Cpath d='M465.276 231L349.989 572.595H478.086L345.719 927L695.854 508.546H572.025L734.281 231H465.276Z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1080 1080'%3E%3Cpath d='M465.276 231L349.989 572.595H478.086L345.719 927L695.854 508.546H572.025L734.281 231H465.276Z'/%3E%3C/svg%3E") center/contain no-repeat}
+.eyebrow::before{content:"";width:12px;height:17px;flex:none;background:var(--color-accent);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='345.719 231 388.562 696'%3E%3Cpath d='M465.276 231L349.989 572.595H478.086L345.719 927L695.854 508.546H572.025L734.281 231H465.276Z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='345.719 231 388.562 696'%3E%3Cpath d='M465.276 231L349.989 572.595H478.086L345.719 927L695.854 508.546H572.025L734.281 231H465.276Z'/%3E%3C/svg%3E") center/contain no-repeat}
 /* brand watermark (reused GIONT bolt) */
 .brand-wm{position:absolute;pointer-events:none;z-index:0}
 .section-title{font-family:var(--font-display);font-weight:800;text-transform:uppercase;font-size:clamp(26px,4.2vw,42px);line-height:1.02;letter-spacing:-.01em;color:var(--gray-900)}
@@ -113,7 +113,7 @@ section[id]{scroll-margin-top:96px}
 .hero__bg{position:absolute;inset:0;background:var(--color-primary-50);
   clip-path:polygon(0 0,100% 0,100% 78%,0 100%);z-index:0}
 .hero__bg::after{content:"";position:absolute;right:-60px;top:-60px;width:420px;height:420px;opacity:.32;
-  background:radial-gradient(circle, rgba(255,102,10,.10), transparent 68%)}
+  background:radial-gradient(circle, rgba(255,102,10,.10), transparent 68%);transform:translateY(var(--glow-y,0))}
 .hero__inner{position:relative;z-index:1;display:grid;gap:48px;align-items:center;padding:clamp(48px,7vw,86px) 0 clamp(40px,6vw,64px)}
 @media(min-width:940px){.hero__inner{grid-template-columns:1.05fr .95fr}}
 .hero h1{font-size:clamp(46px,9vw,90px);margin:18px 0 18px}
@@ -126,6 +126,7 @@ section[id]{scroll-margin-top:96px}
 /* app card mock */
 .appcard{justify-self:center;width:min(360px,90vw);background:var(--color-surface);border-radius:var(--radius-xl);
   box-shadow:var(--shadow-lg);padding:22px;position:relative}
+.hero__cardwrap{display:flex;justify-content:center}
 
 /* device chips */
 .chips-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
@@ -134,15 +135,20 @@ section[id]{scroll-margin-top:96px}
 .chip-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--color-success)}
 
 /* steps strip */
-.steps{display:grid;gap:16px;padding:clamp(34px,5vw,54px) 0}
-@media(min-width:760px){.steps{grid-template-columns:repeat(3,1fr)}}
-.step{background:var(--color-surface);border-radius:var(--radius-xl);box-shadow:var(--shadow-sm);padding:28px;display:flex;gap:16px;align-items:flex-start}
+.steps{display:grid;gap:16px;padding:clamp(34px,5vw,54px) 0;position:relative}
+@media(min-width:760px){.steps{grid-template-columns:repeat(3,1fr)}
+  /* connector line behind the step cards: shows in the gaps, draws on reveal */
+  .steps::before{content:"";position:absolute;left:28px;right:28px;top:calc(clamp(34px,5vw,54px) + 46px);height:2px;border-radius:2px;background:linear-gradient(90deg,var(--color-primary),var(--color-accent));transform-origin:0 50%;z-index:0}
+  .js .steps::before{transform:scaleX(0);transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+  .js .steps.is-drawn::before{transform:scaleX(1)}
+}
+.step{background:var(--color-surface);border-radius:var(--radius-xl);box-shadow:var(--shadow-sm);padding:28px;display:flex;gap:16px;align-items:flex-start;position:relative;z-index:1}
 .step__n{width:38px;height:38px;border-radius:50%;background:var(--color-primary);color:var(--gray-850);font-weight:800;display:grid;place-items:center;flex:none}
 .step h3{font-weight:800;font-size:16px;margin-bottom:4px}
 .step p{font-size:14px;color:var(--gray-500)}
 
 /* generic section */
-.section{padding:clamp(56px,8vw,96px) 0}
+.section{padding:clamp(56px,8vw,96px) 0;overflow-x:clip}
 .sec-intro{max-width:640px;margin-bottom:40px}
 .sec-intro .section-title{margin-top:12px}
 .sec-intro p{margin-top:14px}
@@ -295,9 +301,18 @@ section[id]{scroll-margin-top:96px}
 .js .reveal{opacity:0;transform:translateY(22px) scale(.985);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
 .js .reveal.is-visible{opacity:1;transform:none}
 .js .d1{transition-delay:.05s}.js .d2{transition-delay:.13s}.js .d3{transition-delay:.21s}.js .d4{transition-delay:.29s}
+/* reveal direction variants (initial state only; .is-visible & reduced-motion still win on specificity/order) */
+.js .reveal--scale{transform:scale(.93)}
+/* horizontal variants only where cards sit in a multi-col grid; on mobile they'd push past the
+   viewport edge (full-width cards) and create horizontal scroll, so there they keep the base fade-up */
+@media(min-width:720px){
+  .js .reveal--left{transform:translateX(-34px)}
+  .js .reveal--right{transform:translateX(34px)}
+}
 /* head-level failsafe: if the main script never runs, force everything visible after 2.5s */
 .js.reveal-failsafe .reveal,.js.reveal-failsafe .reveal.is-visible{opacity:1;transform:none}
 .js.reveal-failsafe .lfill{width:80%}
+.js.reveal-failsafe .steps::before{transform:scaleX(1)}
 
 /* small screens */
 @media(max-width:400px){
@@ -312,6 +327,7 @@ section[id]{scroll-margin-top:96px}
   /* match .js .reveal specificity so it actually wins */
   .js .reveal,.js .reveal.is-visible,.reveal,.lfill{transition:none;animation:none;opacity:1;transform:none}
   .js .lfill,.js .lfill.is-visible,.lfill{width:80%;animation:none}
+  .js .steps::before{transform:scaleX(1);transition:none}
   .vcard:hover,.plan:hover{transform:none}
   .plan__badge::after,.hero .eyebrow::before{animation:none}
 }
@@ -333,6 +349,9 @@ section[id]{scroll-margin-top:96px}
 /* subtle lightning pulse on the hero eyebrow bolt */
 .hero .eyebrow::before{animation:boltpulse 2.6s ease-in-out infinite}
 @keyframes boltpulse{0%,100%{opacity:.8;transform:scale(1)}50%{opacity:1;transform:scale(1.14)}}
+/* ---- scroll progress bar (top) ---- */
+.scrollprog{position:fixed;top:0;left:0;height:3px;width:100%;transform:scaleX(0);transform-origin:0 50%;background:linear-gradient(90deg,var(--color-primary),var(--color-accent));z-index:200;pointer-events:none}
+.js .scrollprog{will-change:transform}
 
 /* ---- body font: Manrope variable (embedded, woff2 base64) ---- */
 @font-face{font-family:"Manrope";font-style:normal;font-weight:400 800;font-display:swap;
@@ -349,6 +368,7 @@ section[id]{scroll-margin-top:96px}
 <script>document.documentElement.classList.add('js');window.__revealFailsafe=setTimeout(function(){document.documentElement.classList.add('reveal-failsafe');},4000);</script>
 </head>
 <body>
+<div class="scrollprog" aria-hidden="true"></div>
 
 <a class="skip-link" href="#top">Перейти к содержимому</a>
 
@@ -392,11 +412,13 @@ section[id]{scroll-margin-top:96px}
           </div>
         </div>
 
-        <div class="appcard appcard--ph reveal d3">
-          <div class="imgph">
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 16l-5-5L5 20"/></svg>
-            <div class="q">?</div>
-            <small>Скриншот приложения</small>
+        <div class="hero__cardwrap">
+          <div class="appcard appcard--ph reveal d3">
+            <div class="imgph">
+              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 16l-5-5L5 20"/></svg>
+              <div class="q">?</div>
+              <small>Скриншот приложения</small>
+            </div>
           </div>
         </div>
       </div>
@@ -458,11 +480,11 @@ section[id]{scroll-margin-top:96px}
         <h2 class="section-title">Стабильность и <b>простота</b></h2>
       </div>
       <div class="why__grid">
-        <div class="wcard wcard--a reveal d1"><div class="n">01</div><h3>Работает там, где другие — <b>вне зоны доступа</b></h3><p>Стабильный доступ к привычным сервисам, когда другие подключения уже не справляются.</p></div>
-        <div class="wcard wcard--b reveal d2"><div class="n">02</div><h3>Скорость без <b>зависаний</b></h3><p>Быстрые серверы с выделенным каналом: соединение не обрывается, видео в 4K без зависаний.</p></div>
-        <div class="wcard wcard--c reveal d1"><div class="n">03</div><h3>Ваш трафик — <b>под защитой</b></h3><p>Соединение шифруется: данные защищены в открытых и публичных сетях.</p></div>
-        <div class="wcard wcard--d reveal d2"><div class="n">04</div><h3>Стабильно даже в <b>часы пик</b></h3><p>Постоянно оптимизируем серверы, чтобы скорость держалась ровно даже вечером, когда нагрузка максимальная.</p></div>
-        <div class="wcard wcard--e wcard--feat reveal d3"><div class="n">05</div><h3>Подключение за <b>15 секунд</b></h3><p>Быстрая авторизация без новых паролей. Подключение в 3 шага, без сложных настроек. Оптимизированные европейские серверы дают стабильный и быстрый доступ к привычным сервисам.</p></div>
+        <div class="wcard wcard--a reveal reveal--left d1"><div class="n">01</div><h3>Работает там, где другие — <b>вне зоны доступа</b></h3><p>Стабильный доступ к привычным сервисам, когда другие подключения уже не справляются.</p></div>
+        <div class="wcard wcard--b reveal reveal--right d2"><div class="n">02</div><h3>Скорость без <b>зависаний</b></h3><p>Быстрые серверы с выделенным каналом: соединение не обрывается, видео в 4K без зависаний.</p></div>
+        <div class="wcard wcard--c reveal reveal--left d1"><div class="n">03</div><h3>Ваш трафик — <b>под защитой</b></h3><p>Соединение шифруется: данные защищены в открытых и публичных сетях.</p></div>
+        <div class="wcard wcard--d reveal reveal--right d2"><div class="n">04</div><h3>Стабильно даже в <b>часы пик</b></h3><p>Постоянно оптимизируем серверы, чтобы скорость держалась ровно даже вечером, когда нагрузка максимальная.</p></div>
+        <div class="wcard wcard--e wcard--feat reveal reveal--scale d3"><div class="n">05</div><h3>Подключение за <b>15 секунд</b></h3><p>Быстрая авторизация без новых паролей. Подключение в 3 шага, без сложных настроек. Оптимизированные европейские серверы дают стабильный и быстрый доступ к привычным сервисам.</p></div>
       </div>
     </div>
   </section>
@@ -505,25 +527,25 @@ section[id]{scroll-margin-top:96px}
         <h2 class="section-title">Дольше период — <b>дешевле месяц</b></h2>
       </div>
       <div class="pgrid">
-        <div class="plan reveal d1">
+        <div class="plan reveal reveal--scale d1">
           <div class="plan__term">1 месяц</div>
           <div class="plan__price">249 ₽</div><div class="plan__per">249 ₽ / месяц</div>
           <span class="plan__save plan__save--none">—</span>
           <a href="#" class="btn btn--outline">Выбрать</a>
         </div>
-        <div class="plan reveal d2">
+        <div class="plan reveal reveal--scale d2">
           <div class="plan__term">3 месяца</div>
           <div class="plan__price">709 ₽</div><div class="plan__per">236 ₽ / месяц</div>
           <span class="plan__save">выгода ~5%</span>
           <a href="#" class="btn btn--outline">Выбрать</a>
         </div>
-        <div class="plan reveal d3">
+        <div class="plan reveal reveal--scale d3">
           <div class="plan__term">6 месяцев</div>
           <div class="plan__price">1349 ₽</div><div class="plan__per">225 ₽ / месяц</div>
           <span class="plan__save">выгода ~10%</span>
           <a href="#" class="btn btn--outline">Выбрать</a>
         </div>
-        <div class="plan plan--best reveal d4">
+        <div class="plan plan--best reveal reveal--scale d4">
           <span class="plan__badge">Выгодно</span>
           <div class="plan__term">12 месяцев</div>
           <div class="plan__price">2539 ₽</div><div class="plan__per">212 ₽ / месяц</div>
@@ -654,11 +676,12 @@ section[id]{scroll-margin-top:96px}
     requestAnimationFrame(step);
   }
 
-  /* scroll reveal + progress bar + counters
+  /* scroll reveal + steps connector + counters
      scroll-based (not IntersectionObserver): IO is unreliable during iOS Safari
      momentum scrolling and can leave sections invisible. This fires on every
      scroll frame + has a failsafe so content is never stuck hidden. */
   var revealEls = document.querySelectorAll('.reveal, .lfill');
+  var stepsEl = document.querySelector('.steps');
   function showEl(el){
     if(el.classList.contains('is-visible')) return;
     el.classList.add('is-visible');
@@ -670,6 +693,9 @@ section[id]{scroll-margin-top:96px}
       if(el.classList.contains('is-visible')) return;
       if(el.getBoundingClientRect().top < vh * 0.92) showEl(el);
     });
+    if(stepsEl && !stepsEl.classList.contains('is-drawn') && stepsEl.getBoundingClientRect().top < vh * 0.82){
+      stepsEl.classList.add('is-drawn');
+    }
   }
   var revealTicking = false;
   function onRevealScroll(){
@@ -684,20 +710,46 @@ section[id]{scroll-margin-top:96px}
   /* main script works → cancel the head-level reveal-failsafe so scroll reveals actually animate */
   if(window.__revealFailsafe){ clearTimeout(window.__revealFailsafe); }
 
-  /* subtle hero parallax */
+  /* scroll progress bar (top) */
+  var prog = document.querySelector('.scrollprog');
+  if(prog){
+    var progTick = false;
+    function updProg(){
+      var d = document.documentElement;
+      var max = (d.scrollHeight - d.clientHeight) || 1;
+      var p = (window.pageYOffset || d.scrollTop || 0) / max;
+      if(p < 0) p = 0; else if(p > 1) p = 1;
+      prog.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+    }
+    window.addEventListener('scroll', function(){ if(progTick) return; progTick = true; requestAnimationFrame(function(){ updProg(); progTick = false; }); }, { passive: true });
+    window.addEventListener('resize', updProg, { passive: true });
+    updProg();
+  }
+
+  /* multi-layer hero parallax (depth): cream block 0.12x + glow 0.34x + card -0.05x.
+     card layer is desktop-only (it has room there and there's no mobile overlap risk).
+     card parallax lives on a non-reveal wrapper so it never fights the reveal transform. */
   var heroBg = document.querySelector('.hero__bg');
-  if(heroBg && !reduceMotion){
-    heroBg.style.willChange = 'transform';
-    var ticking = false;
-    window.addEventListener('scroll', function(){
-      if(ticking) return;
-      ticking = true;
-      requestAnimationFrame(function(){
-        var y = window.pageYOffset || 0;
-        if(y < 900) heroBg.style.transform = 'translateY(' + (y * 0.12).toFixed(1) + 'px)';
-        ticking = false;
-      });
-    }, { passive: true });
+  var cardWrap = document.querySelector('.hero__cardwrap');
+  var deskMq = window.matchMedia ? window.matchMedia('(min-width:940px)') : { matches: false };
+  if((heroBg || cardWrap) && !reduceMotion){
+    if(heroBg) heroBg.style.willChange = 'transform';
+    if(cardWrap) cardWrap.style.willChange = 'transform';
+    var hpTick = false;
+    function heroPar(){
+      var y = window.pageYOffset || 0;
+      if(y < 1100){
+        if(heroBg){
+          heroBg.style.transform = 'translateY(' + (y * 0.12).toFixed(1) + 'px)';
+          heroBg.style.setProperty('--glow-y', (y * 0.34).toFixed(1) + 'px');
+        }
+        if(cardWrap){
+          cardWrap.style.transform = deskMq.matches ? 'translateY(' + (y * -0.05).toFixed(1) + 'px)' : '';
+        }
+      }
+    }
+    window.addEventListener('scroll', function(){ if(hpTick) return; hpTick = true; requestAnimationFrame(function(){ heroPar(); hpTick = false; }); }, { passive: true });
+    heroPar();
   }
  }catch(e){
   /* any runtime error must not leave content hidden */
