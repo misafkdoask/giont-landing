@@ -139,7 +139,8 @@ section[id]{scroll-margin-top:96px}
 @media(min-width:760px){.steps{grid-template-columns:repeat(3,1fr)}
   /* connector line behind the step cards: shows in the gaps, draws on reveal */
   .steps::before{content:"";position:absolute;left:28px;right:28px;top:calc(clamp(34px,5vw,54px) + 46px);height:2px;border-radius:2px;background:linear-gradient(90deg,var(--color-primary),var(--color-accent));transform-origin:0 50%;z-index:0}
-  .js .steps::before{transform:scaleX(var(--fill,0));transition:transform .15s linear}
+  .js .steps::before{transform:scaleX(0);transition:transform 1.5s cubic-bezier(.2,.7,.2,1)}
+  .js .steps.is-playing::before{transform:scaleX(1)}
 }
 .step{background:var(--color-surface);border-radius:var(--radius-xl);box-shadow:var(--shadow-sm);padding:28px;display:flex;gap:16px;align-items:flex-start;position:relative;z-index:1}
 .step__n{width:38px;height:38px;border-radius:50%;background:var(--color-primary);color:var(--gray-850);font-weight:800;display:grid;place-items:center;flex:none}
@@ -309,19 +310,13 @@ section[id]{scroll-margin-top:96px}
   .js .reveal--right{transform:translateX(40px)}
 }
 /* ===== wow scroll effects (placed before reduced-motion so it can override) ===== */
-/* (4) blur-in on reveal — desktop/tablet only (mobile filter perf cost) */
-@media(min-width:760px){
-  .js .reveal{filter:blur(7px);transition:opacity 1s cubic-bezier(.2,.7,.2,1),transform 1s cubic-bezier(.2,.7,.2,1),filter 1s cubic-bezier(.2,.7,.2,1)}
-  .js .reveal.is-visible{filter:none}
-  .js.reveal-failsafe .reveal{filter:none}
-}
 .plan__price .num{font-variant-numeric:tabular-nums}
 /* (1) lightning signature: section eyebrow bolts "charge up" when scrolled into view */
 .js .eyebrow.charged::before{animation:boltcharge .7s ease-out both}
 @keyframes boltcharge{0%{transform:scale(.35);opacity:.15}45%{transform:scale(1.2);opacity:1;filter:drop-shadow(0 0 7px rgba(243,125,15,.95))}100%{transform:scale(1);opacity:1;filter:none}}
-/* (2) steps: connector fills with scroll progress, numbers light up in sequence */
-.step__n{transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s}
-.js .step.is-active .step__n{transform:scale(1.14);box-shadow:0 0 0 5px rgba(255,102,10,.16)}
+/* (2) steps: numbers fire (light up) in sequence as the stepper auto-plays once */
+.js .step.fired .step__n{animation:stepfire .7s ease-out}
+@keyframes stepfire{0%{transform:scale(1)}40%{transform:scale(1.18);box-shadow:0 0 0 7px rgba(255,102,10,.22)}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,102,10,0)}}
 /* (3) cinematic dark stats: clip-wipe entrance + moving scan sheen + counter glow */
 .js .stats{clip-path:inset(0 100% 0 0 round var(--radius-xl));transition:clip-path 1.1s cubic-bezier(.2,.7,.2,1)}
 .js .stats.is-shown{clip-path:inset(0 0 0 0 round var(--radius-xl))}
@@ -347,7 +342,7 @@ section[id]{scroll-margin-top:96px}
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   /* match .js .reveal specificity so it actually wins */
-  .js .reveal,.js .reveal.is-visible,.reveal,.lfill{transition:none;animation:none;opacity:1;transform:none;filter:none}
+  .js .reveal,.js .reveal.is-visible,.reveal,.lfill{transition:none;animation:none;opacity:1;transform:none}
   .js .lfill,.js .lfill.is-visible,.lfill{width:80%;animation:none}
   .js .steps::before{transform:scaleX(1);transition:none}
   .vcard:hover,.plan:hover{transform:none}
@@ -355,8 +350,7 @@ section[id]{scroll-margin-top:96px}
   /* wow effects: keep result, drop motion */
   .js .stats{clip-path:none;transition:none}
   .js .eyebrow.charged::before,.js .stats.is-shown::after,.js .stats.is-shown .stat__big .num{animation:none}
-  .step__n{transition:none}
-  .js .step.is-active .step__n{transform:none;box-shadow:none}
+  .js .step.fired .step__n{animation:none}
 }
 /* avoid sticky :hover state lingering after tap on touch devices */
 @media(hover:none){
@@ -712,6 +706,7 @@ section[id]{scroll-margin-top:96px}
   var stepEls = document.querySelectorAll('.step');
   var statsEl = document.querySelector('.stats');
   var statsDone = false;
+  var stepsPlayed = false;
   var eyebrows = [].filter.call(document.querySelectorAll('.eyebrow'), function(e){ return !(e.closest && e.closest('.hero')); });
   function showEl(el){
     if(el.classList.contains('is-visible')) return;
@@ -734,14 +729,17 @@ section[id]{scroll-margin-top:96px}
       statsEl.classList.add('is-shown');
       Array.prototype.forEach.call(statsEl.querySelectorAll('[data-count]'), runCounter);
     }
-    // (2) steps: connector fills + numbers light up in sequence, tied to scroll progress
-    if(stepsEl){
-      var r = stepsEl.getBoundingClientRect();
-      var p = (vh * 0.85 - r.top) / (r.height + vh * 0.40);
-      if(p < 0) p = 0; else if(p > 1) p = 1;
-      stepsEl.style.setProperty('--fill', p.toFixed(3));
-      var activeN = Math.ceil(p * stepEls.length);
-      for(var i = 0; i < stepEls.length; i++){ stepEls[i].classList.toggle('is-active', i < activeN); }
+    // (2) steps: play the stepper once when it enters view — connector draws + numbers fire 1→2→3.
+    // (auto-play, not scroll-linked: the steps sit on the first screen, so a scroll-progress fill
+    //  would complete instantly; a timed sequence on first view actually reads as a demo.)
+    if(stepsEl && !stepsPlayed && stepsEl.getBoundingClientRect().top < vh * 0.92){
+      stepsPlayed = true;
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        stepsEl.classList.add('is-playing');
+        for(var si = 0; si < stepEls.length; si++){
+          (function(el, delay){ setTimeout(function(){ el.classList.add('fired'); }, delay); })(stepEls[si], 300 + si * 480);
+        }
+      }); });
     }
   }
   var revealTicking = false;
@@ -802,7 +800,7 @@ section[id]{scroll-margin-top:96px}
   /* any runtime error must not leave content hidden */
   Array.prototype.forEach.call(document.querySelectorAll('.reveal,.lfill'), function(el){ el.classList.add('is-visible'); });
   var _s=document.querySelector('.stats'); if(_s){ _s.classList.add('is-shown'); }
-  var _st=document.querySelector('.steps'); if(_st){ _st.style.setProperty('--fill','1'); }
+  var _st=document.querySelector('.steps'); if(_st){ _st.classList.add('is-playing'); }
  }
 })();
 </script>
