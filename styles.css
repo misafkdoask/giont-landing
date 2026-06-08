@@ -63,7 +63,7 @@ section[id]{scroll-margin-top:96px}
 .logo__txt b{color:var(--color-primary)}
 
 /* ---- header ---- */
-.header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--gray-200)}
+.header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--gray-200)}
 .header__inner{display:flex;align-items:center;gap:26px;height:70px}
 .nav{display:flex;gap:28px;margin-left:8px}
 .nav a{font-weight:500;font-size:15px;color:var(--gray-500);transition:.16s}
@@ -312,7 +312,7 @@ section[id]{scroll-margin-top:96px}
 @keyframes statscan{0%{transform:translateX(-100%)}55%,100%{transform:translateX(100%)}}
 .js .stats.is-shown .stat__big .num{animation:numglow 1.3s ease-out both}
 @keyframes numglow{0%{text-shadow:0 0 0 transparent}40%{text-shadow:0 0 16px rgba(255,102,10,.85)}100%{text-shadow:0 0 0 transparent}}
-/* head-level failsafe: if the main script never runs, force everything visible after 2.5s */
+/* head-level failsafe: if the main script never runs, force everything visible after 4s */
 .js.reveal-failsafe .reveal,.js.reveal-failsafe .reveal.is-visible{opacity:1;transform:none}
 .js.reveal-failsafe .lfill{width:80%}
 .js.reveal-failsafe .steps::before{transform:scaleX(1)}
@@ -334,7 +334,7 @@ section[id]{scroll-margin-top:96px}
   .vcard:hover,.plan:hover{transform:none}
   .plan__badge::after,.hero .eyebrow::before{animation:none}
   /* wow effects: keep result, drop motion */
-  .js .stats{clip-path:none;transition:none}
+  .js .stats,.js .stats.is-shown{clip-path:none;transition:none}
   .js .eyebrow.charged::before,.js .stats.is-shown::after,.js .stats.is-shown .stat__big .num{animation:none}
   .js .step.fired .step__n{animation:none}
 }
@@ -342,6 +342,8 @@ section[id]{scroll-margin-top:96px}
 @media(hover:none){
   .vcard:hover,.plan:hover{transform:none;box-shadow:var(--shadow-sm)}
   .btn--primary:hover{background:var(--color-primary)}
+  /* bigger tap targets for secondary footer links on touch */
+  .flist a{display:flex;align-items:center;min-height:44px}
 }
 /* ---- micro-interactions (CSS only, zero added load) ---- */
 /* tap/active feedback (gives life on touch where hover is absent) */
