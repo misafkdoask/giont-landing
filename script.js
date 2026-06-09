@@ -2,6 +2,19 @@
  try{
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* UTM pass-through: forward the landing URL's query params (utm_source etc.) onto the app CTAs.
+     Buttons keep a plain https://webapp.giont.ru href, so they work even if this never runs. */
+  (function(){
+    var qs = window.location.search;
+    if(qs.length < 2) return;
+    var q = qs.slice(1);
+    Array.prototype.forEach.call(document.querySelectorAll('a[href^="https://webapp.giont.ru"]'), function(a){
+      var href = a.getAttribute('href'), hash = '', hi = href.indexOf('#');
+      if(hi > -1){ hash = href.slice(hi); href = href.slice(0, hi); }
+      a.setAttribute('href', href + (href.indexOf('?') === -1 ? '?' : '&') + q + hash);
+    });
+  })();
+
   /* burger menu */
   var toggle = document.querySelector('.nav-toggle');
   var nav = document.getElementById('nav');
